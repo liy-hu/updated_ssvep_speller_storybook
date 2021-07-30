@@ -1,0 +1,18 @@
+pg:1 I want my hat back. 
+pg:2 Have you seen my hat? No. I haven't seen your hat. OK. Thank you.
+pg:3 Have you seen my hat? No. I have not seen any hats around here. Ok. Thank you anyway.
+pg:4 Have you seen my hat? No. Why are you asking me. I haven't seen it. I haven't seen any hats anywhere. I would not steal a hat. Don't ask me
+any more questions. OK. Thank you anyway.
+pg:5 Have you seen my hat? I haven't seen anything all day. I have been trying to climb this rock. Would you like me to lift you on top of it? Yes, please.
+pg:6 Have you seen my hat? I saw a hat once. It was blue and round. My hat doesn't look like that. Thank you anyway.
+pg:7 Have you seen my hat? What is a hat? Thank you anyway.
+pg:8 Nobody has seen my hat. What if I never see it again? What if nobody ever finds it? My poor hat. I miss it so much.
+pg:9 What's the matter? I have lost my hat. And nobody has seen it. What does your hat look like? It is red and pointy and.
+pg:10 I HAVE SEEN MY HAT.
+pg:11
+pg:12 YOU. YOU STOLE MY HAT.
+pg:13
+pg:14 I love my hat.
+pg:15 Excuse me, have you seen a rabbit wearing a hat? No. Why are you asking me. I haven't seen him.
+I haven't seen any rabbits anywhere. I would not eat a rabbit. Don't ask me anymore questions. OK. Thank you anyway.
+pg:16

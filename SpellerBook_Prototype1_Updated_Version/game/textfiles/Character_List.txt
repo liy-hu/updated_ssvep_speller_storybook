@@ -1,0 +1,3 @@
+Characters: Astronaut,Safari Explorer,Princess
+Emotions: Happy, Sad, Angry, Shocked
+States: Running, Standing, Pose
