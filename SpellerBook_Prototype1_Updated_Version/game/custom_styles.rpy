@@ -14,10 +14,19 @@ style incorrect:
     color "#5DADE2"
     italic True
 
+style attempt:
+    color "#FF6347"
+    italic True
+
 style highlight:
     size 70
     color '#FFB500'
     underline True
+
+style saved_input:
+    italic True
+    underline True
+
 
 # Styles for text (labels) within the preferences screen
 

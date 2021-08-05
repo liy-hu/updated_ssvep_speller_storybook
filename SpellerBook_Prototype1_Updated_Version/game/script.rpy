@@ -4,6 +4,8 @@ init:
     default my_word_file = ""
     default my_word_length = ""
     default my_story_name = ""
+    default word_change = ""
+
 
 # Functions and styles used for custom input option in word origin and story selection preference screens
 init python:
@@ -15,6 +17,7 @@ init python:
 
     def story_name_func(newstring):
         store.my_story_name = newstring
+
 
     style.input.size = 60
     style.input.color = "#000"
@@ -51,6 +54,8 @@ label start:
 
     # Passive Speller_Story_Book
     label passive_setting:
+
+
 
         # Used to determine the song choice
         if persistent.song_choice == "Here Comes The Sun":
@@ -125,7 +130,7 @@ label start:
         # Used to test whether a custom input was entered in the word origin preference screen
             if persistent.custom_change == True:
                 $ persistent.custom_change = False
-                $ narrator("hello I am in custom")
+                # $ narrator("hello I am in custom")
                 python:
                     try:
                         int(my_word_length)
@@ -194,6 +199,7 @@ label start:
                     # $ the_dict = read_dolch_file(dname)
 
 
+
         label prepare_page:
             ## IGNORE FOR NOW TESTING MUSIC PLAYING CODE
             # play music "audio/Here Comes The Sun (Remastered 2009).mp3"
@@ -213,6 +219,7 @@ label start:
 
                 $ a_page.select_words_to_highlight(type, the_dict, the_length)
 
+
                 # sets counter to count the number of sentences displayed
                 $ i = 0
                 jump display_sentences
@@ -222,6 +229,8 @@ label start:
         label display_sentences:
 
             if i < number_of_sentences:
+                # clears the previous input by user
+                $ word_change = ""
                 # shows image of a page
                 $ show_page_image()
 
@@ -232,9 +241,9 @@ label start:
                 #     $ show_page_image()
                 #
                 # elif orientation == "horizontal":
-                    # $ show_horizontal_page_image()
-                    # $ show_entire_image()
-                    # define narrator = nvl_narrator
+                #
+                #     $ show_entire_image()
+                #     define narrator = nvl_narrator
                 ## IGNORE FOR NOW (TESTING CODE FOR DISPLAYING DIFFERENT TYPES OF PICTURE BOOKS)
 
 
@@ -242,8 +251,16 @@ label start:
                 $ sentence_dict ={}
                 # sets a counter to count the number of attempts completed
                 $ attempts = 1
+
+                # Before calling the say screen
+                # $ narrator(change_word)
+
+
                 # filling the sentence dictionary with the returned sentence attributes
                 $ sentence_dict = a_page.display_sentence(i, True, None, None, orientation)
+
+                # After calling the say screen
+                # $ narrator(change_word)
 
                 label re_display_sentence:
 
@@ -260,19 +277,28 @@ label start:
                         $ w = 0
                         # ensures that the word spelled by the user (inputted by user) is actually going to be compared to a word that exists or is highligthed
                         while w < len(compare_words):
-                            # compares the correct spelling of word and word spelled by user
-                            if compare_words[w] == spell_word:
+
+                            # compares the correct spelling of target word and word spelled by user
+                            if compare_words[w] == word_change:
                                 $ i +=1
                                 # reward screen for correct spelling
-                                $ narrator("{=correct}Awesome Job!{/font}" + " The correct spelling of the word is: " + "{=correct_word}" + compare_words[w] + "{/font}" +  "\n\nPress enter to advance to the next page")
+                                $ narrator("{=correct}Awesome Job!{/font} " + " The correct spelling of the word is: " + "{=correct_word}" + compare_words[w] + "{/font}" +  "\n\nYou spelled: " + "{=saved_input}" + word_change + "{/font}" + "\nPress enter to advance to the next page")
+
                                 # jumps to display new sentence
                                 jump display_sentences
 
                             else:
                                 # keeps track of the number of attempts made by user
                                 if attempts < persistent.attempt_limit:
+                                    # show the number of attempts that the user had left
+                                    $ attempts_left = str(persistent.attempt_limit - attempts)
+                                    $ narrator("The number of {=attempt}attempts left:{/font}  " +  attempts_left)
+
+                                    # clears the previous input by user
+                                    $ word_change = ""
                                     # updates sentence dictionary and displays the same sentence again
                                     $ sentence_dict = a_page.display_sentence(i, True, compare_words, final_sentence, orientation)
+
                                     # increments the attempt counter
                                     $ attempts += 1
                                     # jumps to allow the user to retry again
@@ -281,14 +307,14 @@ label start:
                                 # performed after attempts by user exceeds specified attempt limit and shows nice try screen.
                                 else:
                                     $ i += 1
-                                    $ narrator("{=incorrect}Nice Try!{/font} " + " The correct spelling of the word is: " + "{=correct_word}" + compare_words[w] + "{/font}" + "\n\nPress enter to advance to the next page")
+                                    $ narrator("{=incorrect}Nice Try!{/font} " + " The correct spelling of the word is: " + "{=correct_word}" + compare_words[w] + "{/font}" +  "\n\nYou spelled: " + "{=saved_input}" + word_change + "{/font}" + "\nPress enter to advance to the next page")
                                     # jumps to display new sentence
                                     jump display_sentences
                             $ w += 1
                     # if no words highlighted for particular sentence, show new sentence
                     else:
                         $ i += 1
-                        # jumps to display new sentence 
+                        # jumps to display new sentence
                         jump display_sentences
 
             elif number_of_sentences == 0:

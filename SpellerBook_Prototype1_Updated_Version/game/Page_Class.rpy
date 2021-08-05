@@ -253,18 +253,25 @@ init python:
             sentence_attributes = dict.fromkeys(attributes, None)
 
 
-
             if previous_sentence is not None:
                 sentence_attributes["words_to_compare"] = previous_words_to_compare
                 sentence_attributes["highlighted_sentence"] = previous_sentence
-                sentence_attributes["input_word"] = renpy.call_screen ("say", None, previous_sentence)
+                # sentence_attributes["input_word"] = renpy.call_screen ("say", None, previous_sentence)
+                renpy.call_screen ("say", None, previous_sentence)
+                sentence_attributes["input_word"] = word_change
                 return sentence_attributes
+
                 ## IGNORE FOR NOW (TESTING CODE FOR DISPLAYING DIFFERENT TYPES OF PICTURE BOOKS)
                 # if orientation == "horizontal":
-
-                    # sentence_attributes["input_word"] = renpy.call_screen ("nvl", previous_sentence)
-                    # narrator(previous_sentence)
-                    # nvl_clear()
+                #
+                #     sentence_attributes["input_word"]  = renpy.call_screen ("nvl", previous_sentence)
+                #     # sentence_attributes["input_word"] = word_change
+                #     narrator(previous_sentence)
+                #     nvl_clear()
+                #
+                # else:
+                #     renpy.call_screen ("say", None, previous_sentence)
+                #     sentence_attributes["input_word"] = word_change
 
                     # style.say_window = style.window_CUSTOM
                     # style.namebox = style.namebox_CUSTOMNAMEBOX
@@ -272,30 +279,33 @@ init python:
                     # style.textbox = style.CUSTOM_textbox
                     # style.vbox = style.vbox_CUSTOM
                     # style.input_style_text = style.CUSTOM_input_style_text
-
+                #
                 # elif orientation == "vertical":
-                #     sentence_attributes["input_word"] = renpy.call_screen("say",None, previous_sentence)
+                #     renpy.call_screen("say", None, previous_sentence)
+                #     sentence_attributes["input_word"] = word_change
+                # return sentence_attributes
                 ## IGNORE FOR NOW (TESTING CODE FOR DISPLAYING DIFFERENT TYPES OF PICTURE BOOKS)
 
-
-
-                return sentence_attributes
             else:
                 displayable_sentence = self.sentences[sentence_number]
                 if to_highlight == True:
                     highlight_sentence_attributes = self.highlight_words(displayable_sentence ,1)
                     words_to_compare = highlight_sentence_attributes["found_words"]
                     highlighted_sentence = highlight_sentence_attributes["sentence"]
+
                     sentence_attributes["words_to_compare"] = words_to_compare
                     sentence_attributes["highlighted_sentence"] = highlighted_sentence
-                    sentence_attributes["input_word"] = renpy.call_screen ("say", None, highlighted_sentence)
+                    # sentence_attributes["input_word"] = renpy.call_screen ("say", None, highlighted_sentence)
+                    renpy.call_screen ("say", None, highlighted_sentence)
+                    sentence_attributes["input_word"] = word_change
                     return sentence_attributes
+
                     ## IGNORE FOR NOW (TESTING CODE FOR DISPLAYING DIFFERENT TYPES OF PICTURE BOOKS)
                     # if orientation == "horizontal":
-
-                        # sentence_attributes["input_word"] = renpy.call_screen ("nvl", highlighted_sentence)
-                        # narrator(highlighted_sentence)
-                        # nvl_clear()
+                    #     sentence_attributes["input_word"] = renpy.call_screen ("nvl", highlighted_sentence)
+                    #     # sentence_attributes["input_word"] = word_change
+                    #     narrator(highlighted_sentence)
+                    #     nvl_clear()
 
                         # style.say_window = style.window_CUSTOM
                         # style.namebox = style.namebox_CUSTOMNAMEBOX
@@ -304,23 +314,32 @@ init python:
                         # style.vbox = style.vbox_CUSTOM
                         # style.input_style_text = style.CUSTOM_input_style_text
 
+                    # else:
+                    #     renpy.call_screen ("say", None, highlighted_sentence)
+                    #     sentence_attributes["input_word"] = word_change
                     # elif orientation == "vertical":
-                    #     sentence_attributes["input_word"] = renpy.call_screen("say",None, highlighted_sentence)
+                    #     renpy.call_screen("say",None, highlighted_sentence)
+                    #     sentence_attributes["input_word"] =  word_change
+                    # return sentence_attributes
                     ## IGNORE FOR NOW (TESTING CODE FOR DISPLAYING DIFFERENT TYPES OF PICTURE BOOKS)
 
 
                 else:
                     sentence_attributes["words_to_compare"] = None
                     sentence_attributes["highlighted_sentence"] = displayable_sentence
-                    sentence_attributes["input_word"] = renpy.call_screen ("say",None,  displayable_sentence)
+                    # sentence_attributes["input_word"] = renpy.call_screen ("say",None, displayable_sentence)
+
+                    renpy.call_screen ("say", None, displayable_sentence)
+                    sentence_attributes["input_word"] = word_change
                     return sentence_attributes
+
                     ## IGNORE FOR NOW (TESTING CODE FOR DISPLAYING DIFFERENT TYPES OF PICTURE BOOKS)
                     # if orientation == "horizontal":
-
-                        # sentence_attributes["input_word"] = renpy.call_screen ("nvl", displayable_sentence)
-
-                        # narrator(displayable_sentence)
-                        # nvl_clear()
+                    #     sentence_attributes["input_word"] = renpy.call_screen ("nvl", displayable_sentence)
+                    #     # sentence_attributes["input_word"] = word_change
+                    #
+                    #     narrator(displayable_sentence)
+                    #     nvl_clear()
 
                         # style.say_window = style.window_CUSTOM
                         # style.namebox = style.namebox_CUSTOMNAMEBOX
@@ -329,6 +348,12 @@ init python:
                         # style.vbox = style.vbox_CUSTOM
                         # style.input_style_text = style.CUSTOM_input_style_text
 
+                    # else:
+                    #     renpy.call_screen ("say", None, displayable_sentence)
+                    #     sentence_attributes["input_word"] = word_change
                     # elif orientation == "vertical":
-                    #     sentence_attributes["input_word"] = renpy.call_screen("say",None, displayable_sentence)
+                    #     renpy.call_screen("say",None, displayable_sentence)
+                    #     sentence_attributes["input_word"] = word_change
+
+                    # return sentence_attributes
                     ## IGNORE FOR NOW (TESTING CODE FOR DISPLAYING DIFFERENT TYPES OF PICTURE BOOKS)
