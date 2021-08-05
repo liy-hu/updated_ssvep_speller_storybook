@@ -98,24 +98,12 @@ style frame:
 screen say(who, what):
     style_prefix "say"
 
+
     window:
         id "window"
 
-        add "spell_box.png" xpos gui.dialogue_xpos ypos config.screen_height/2+100
-
-
-
-        vbox:
-            id "vbox"
-            text "{=input_label}Input Word{/color}"
-
-            xpos gui.dialogue_xpos
-            xsize gui.dialogue_width
-            ypos config.screen_height/2+50
-
-            input id "input_style_text"
-
-
+        # Using custom input screen
+        use custom_input()
 
         text what id "what" style "say_dialogue"
 
@@ -236,6 +224,42 @@ style CUSTOM_input_style_text:
 style input_label:
     color "#787878"
 
+
+## Custom Input screen #########################################################
+##
+## This screen asks the user for an input saves the input's changes in
+## global variable word_change. It then uses  another screen show_custon_input
+## to show what the input is sending in real time
+
+screen custom_input():
+
+    window:
+        background None
+        add "spell_box.png" xpos gui.dialogue_xpos ypos config.screen_height/2+100
+        vbox:
+            id "vbox"
+            text "{=input_label}Input Word{/color}"
+
+            xpos gui.dialogue_xpos
+            xsize gui.dialogue_width
+            ypos config.screen_height/2+50
+
+            input:
+                id "input_style_text"
+                pixel_width 450
+                value VariableInputValue("word_change", default = True, returnable =True)
+
+            use show_custom_input()
+
+
+
+screen show_custom_input():
+
+    window:
+        background None
+        vbox:
+            ypos -200
+            text word_change
 
 
 ## Input screen ################################################################
