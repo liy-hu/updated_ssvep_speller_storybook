@@ -8,7 +8,7 @@ init python:
         page_list = []
         page_number = 1
         while page_number <= number_of_pages:
-            page_list.append(Page(page_number, story_text, [], [], []))
+            page_list.append(Page(page_number, story_text, [], []))
             page_number += 1
 
         return page_list

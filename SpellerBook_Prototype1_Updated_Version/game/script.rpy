@@ -4,7 +4,10 @@ init:
     default my_word_file = ""
     default my_word_length = ""
     default my_story_name = ""
+
+
     default word_change = ""
+    default attempts = 0
 
 
 # Functions and styles used for custom input option in word origin and story selection preference screens
@@ -26,6 +29,8 @@ init python:
 default persistent.custom_change = False
 default persistent.difficulty = 1
 default persistent.type = "length"
+default persistent.plus = None
+default persistent.minus = None
 
 # Setting default story
 default persistent.story_choice = "Paper_Bag_Princess"
@@ -40,6 +45,9 @@ default persistent.attempt_limit = 3
 label start:
     $ style.say_window = style.window
     $ style.namebox = style.namebox
+
+    # $ plus = True
+    # $ minus = None
 
     # $ myfile_name = "textfiles/hello_world.txt"
     # $ write_file(myfile_name)
@@ -126,6 +134,8 @@ label start:
         if persistent.type == "length":
             $ type = "length"
             $ the_dict = None
+            $ plus = None
+            $ minus = None
 
         # Used to test whether a custom input was entered in the word origin preference screen
             if persistent.custom_change == True:
@@ -142,15 +152,31 @@ label start:
 
             elif persistent.difficulty == -1:
                 $ the_length = 2
+                if persistent.plus == True:
+                    $ plus = True
+                elif persistent.minus == True:
+                    $ minus = True
 
             elif persistent.difficulty == 0:
                 $ the_length = 3
+                if persistent.plus == True:
+                    $ plus = True
+                elif persistent.minus == True:
+                    $ minus = True
 
             elif persistent.difficulty == 1:
                 $ the_length = 4
+                if persistent.plus == True:
+                    $ plus = True
+                elif persistent.minus == True:
+                    $ minus = True
 
             elif persistent.difficulty == 2:
                 $ the_length = 5
+                if persistent.plus == True:
+                    $ plus = True
+                elif persistent.minus == True:
+                    $ minus = True
 
             # ADD MORE DIFFICULTY LEVELS HERE BASED ON LENGTH
                 # elif persistent.difficulty == [number for difficulty]
@@ -199,7 +225,6 @@ label start:
                     # $ the_dict = read_dolch_file(dname)
 
 
-
         label prepare_page:
             ## IGNORE FOR NOW TESTING MUSIC PLAYING CODE
             # play music "audio/Here Comes The Sun (Remastered 2009).mp3"
@@ -211,17 +236,9 @@ label start:
                 $ a_page.get_sentences(text_dividers)
                 $ number_of_sentences = len(a_page.sentences)
 
-                # This is to update the instance attributes words and words_to_highlight.
-                # It fills the attribute word (which is a list)  with all the words of a page and the
-                # attribute words_to_highlight (which is also a list) with specific types of word to highlight
-                # based on the length of the word or a word file (textfile placed in directory).
-                $ a_page.get_words()
-
-                $ a_page.select_words_to_highlight(type, the_dict, the_length)
-
-
                 # sets counter to count the number of sentences displayed
                 $ i = 0
+                # jumps to proceed to display the sentences in the page
                 jump display_sentences
 
             jump while_has_finished
@@ -231,36 +248,27 @@ label start:
             if i < number_of_sentences:
                 # clears the previous input by user
                 $ word_change = ""
-                # shows image of a page
-                $ show_page_image()
 
-                ## IGNORE FOR NOW (TESTING CODE FOR DISPLAYING DIFFERENT TYPES OF PICTURE BOOKS)
-                # calls show_page_image function in show_page_image.rpy file
                 # Used to determine orientation of storybook
-                # if orientation == "vertical":
-                #     $ show_page_image()
-                #
-                # elif orientation == "horizontal":
-                #
-                #     $ show_entire_image()
-                #     define narrator = nvl_narrator
-                ## IGNORE FOR NOW (TESTING CODE FOR DISPLAYING DIFFERENT TYPES OF PICTURE BOOKS)
+                if orientation == "vertical":
+                    $ show_page_image()
+
+                if orientation == "horizontal":
+                    $ show_entire_image()
+                    window hide
+                    pause
+                    define narrator = nvl_narrator
 
 
                 # sets an empty sentence dictionary to store sentence attributes that will be returned by Page_Class display_sentence() method
                 $ sentence_dict ={}
                 # sets a counter to count the number of attempts completed
-                $ attempts = 1
-
-                # Before calling the say screen
-                # $ narrator(change_word)
-
+                $ attempts = persistent.attempt_limit
+                # selects the words that will be eligible to highlight in a given sentence as well as how these words will be chosen.
+                $ a_page.select_words_to_highlight(i, type, the_dict, the_length, plus, minus)
 
                 # filling the sentence dictionary with the returned sentence attributes
                 $ sentence_dict = a_page.display_sentence(i, True, None, None, orientation)
-
-                # After calling the say screen
-                # $ narrator(change_word)
 
                 label re_display_sentence:
 
@@ -271,46 +279,54 @@ label start:
                     # sentence displayed on game screen
                     $ final_sentence = sentence_dict["highlighted_sentence"]
 
-                    # if there are words that are highlighted for this particular sentence then compare word spelled by user
-                    # and correct spelling of word
                     if compare_words is not None:
-                        $ w = 0
                         # ensures that the word spelled by the user (inputted by user) is actually going to be compared to a word that exists or is highligthed
+                        # compares the correct spelling of target word and word spelled by user
+                        $ w = 0
                         while w < len(compare_words):
 
-                            # compares the correct spelling of target word and word spelled by user
-                            if compare_words[w] == word_change:
+                            if compare_words[w].lower() == word_change.lower():
                                 $ i +=1
                                 # reward screen for correct spelling
-                                $ narrator("{=correct}Awesome Job!{/font} " + " The correct spelling of the word is: " + "{=correct_word}" + compare_words[w] + "{/font}" +  "\n\nYou spelled: " + "{=saved_input}" + word_change + "{/font}" + "\nPress enter to advance to the next page")
-
+                                # $ narrator("{=correct}Awesome Job!{/font} " + " The correct spelling of the word is: " + "{=correct_word}" + compare_words[w] + "{/font}" +  "\n\nYou spelled: " + "{=saved_input}" + word_change + "{/font}" + "\nPress enter to advance to the next page")
+                                $ correct_message = "{=correct}Awesome Job!{/font} " + " The correct spelling of the word is: " + "{=correct_word}" + compare_words[w] + "{/font}" +  "\n\nYou spelled: " + "{=saved_input}" + word_change + "{/font}" + "\nPress enter to advance to the next page"
+                                if orientation == "horizontal":
+                                    $ narrator(correct_message)
+                                    $ nvl_clear()
+                                else:
+                                    $ renpy.call_screen("custom_say_screen", correct_message, not None)
                                 # jumps to display new sentence
+
                                 jump display_sentences
 
                             else:
                                 # keeps track of the number of attempts made by user
-                                if attempts < persistent.attempt_limit:
-                                    # show the number of attempts that the user had left
-                                    $ attempts_left = str(persistent.attempt_limit - attempts)
-                                    $ narrator("The number of {=attempt}attempts left:{/font}  " +  attempts_left)
+                                if attempts > 0:
 
                                     # clears the previous input by user
                                     $ word_change = ""
-                                    # updates sentence dictionary and displays the same sentence again
+                                    # updates sentence dictionary, displays the same sentence again and increments the attempt counter
                                     $ sentence_dict = a_page.display_sentence(i, True, compare_words, final_sentence, orientation)
-
-                                    # increments the attempt counter
-                                    $ attempts += 1
                                     # jumps to allow the user to retry again
                                     jump re_display_sentence
 
                                 # performed after attempts by user exceeds specified attempt limit and shows nice try screen.
                                 else:
                                     $ i += 1
-                                    $ narrator("{=incorrect}Nice Try!{/font} " + " The correct spelling of the word is: " + "{=correct_word}" + compare_words[w] + "{/font}" +  "\n\nYou spelled: " + "{=saved_input}" + word_change + "{/font}" + "\nPress enter to advance to the next page")
+                                    # $ narrator("{=incorrect}Nice Try!{/font} " + " The correct spelling of the word is: " + "{=correct_word}" + compare_words[w] + "{/font}" +  "\n\nYou spelled: " + "{=saved_input}" + word_change + "{/font}" + "\nPress enter to advance to the next page")
+                                    $ incorrect_message = "{=incorrect}Nice Try!{/font} " + " The correct spelling of the word is: " + "{=correct_word}" + compare_words[w] + "{/font}" +  "\n\nYou spelled: " + "{=saved_input}" + word_change + "{/font}" + "\nPress enter to advance to the next page"
+                                    if orientation == "horizontal":
+                                        $ narrator(incorrect_message)
+                                        $ nvl_clear()
+
+                                    else:
+                                        $ renpy.call_screen("custom_say_screen", incorrect_message, not None)
+
                                     # jumps to display new sentence
                                     jump display_sentences
+
                             $ w += 1
+
                     # if no words highlighted for particular sentence, show new sentence
                     else:
                         $ i += 1
@@ -325,16 +341,14 @@ label start:
 
             jump turn_page
 
+
         label turn_page:
             # Functions used to update page and page image
             $ update_pages()
             $ update_page_image()
             jump prepare_page
 
-        # stop music fadeout 1.0
-        label while_has_finished:
-        # do more things here?
+            # stop music fadeout 1.0
 
 
-
-    return
+        return

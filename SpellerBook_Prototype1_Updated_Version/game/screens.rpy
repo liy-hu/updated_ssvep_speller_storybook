@@ -94,50 +94,50 @@ style frame:
 ## and id "window" to apply style properties.
 ##
 ## https://www.renpy.org/doc/html/screen_special.html#say
-
-screen say(who, what):
-    style_prefix "say"
-
-
-    window:
-        id "window"
-
-        # Using custom input screen
-        use custom_input()
-
-        text what id "what" style "say_dialogue"
-
-        if who is not None:
-
-            window:
-
-                id "namebox"
-                style "namebox"
-                text who id "who"
-
-    ## If there's a side image, display it above the text. Do not display on the
-    ## phone variant - there's no room.
-    if not renpy.variant("small"):
-        add SideImage() xalign 0.0 yalign 1.0
-
-
+#
+# screen say(who, what):
+#     style_prefix "say"
+#
+#
+#     window:
+#         id "window"
+#
+#         # Using custom input screen
+#         use custom_input()
+#
+#         text what id "what" style "say_dialogue"
+#
+#         if who is not None:
+#
+#             window:
+#
+#                 id "namebox"
+#                 style "namebox"
+#                 text who id "who"
+#
+#     ## If there's a side image, display it above the text. Do not display on the
+#     ## phone variant - there's no room.
+#     if not renpy.variant("small"):
+#         add SideImage() xalign 0.0 yalign 1.0
+#
+#
 
 
 ## Make the namebox available for styling through the Character object.
-init python:
-    config.character_id_prefixes.append('namebox')
-
-style window is default
-
-
-style say_label is default
-style say_dialogue is default
-style say_thought is say_dialogue
-
-style namebox is default
-style namebox_label is say_label
-
-style high_background is default
+# init python:
+#     config.character_id_prefixes.append('namebox')
+#
+# style window is default
+#
+#
+# style say_label is default
+# style say_dialogue is default
+# style say_thought is say_dialogue
+#
+# style namebox is default
+# style namebox_label is say_label
+#
+# style high_background is default
 
 
 style window:
@@ -224,6 +224,32 @@ style CUSTOM_input_style_text:
 style input_label:
     color "#787878"
 
+# input_required
+
+## Custom say screen ###########################################################
+
+screen custom_say_screen(what, input_required):
+    style_prefix "say"
+
+
+    window:
+        id "window"
+
+        if input_required is not None:
+            # Using custom input screen
+            use custom_input("vertical")
+
+        # text str(attempt)
+
+        text what id "what" style "say_dialogue"
+
+
+
+    # imagemap:
+    #     idle "gui/Quick Menu.png"
+    #     hover "gui/Quick Menu hover.png"
+    #     hotspot (85, 156, 118, 44) action  ShowMenu("quick_menu")
+
 
 ## Custom Input screen #########################################################
 ##
@@ -231,35 +257,80 @@ style input_label:
 ## global variable word_change. It then uses  another screen show_custon_input
 ## to show what the input is sending in real time
 
-screen custom_input():
+screen custom_input(orientation):
 
     window:
         background None
-        add "spell_box.png" xpos gui.dialogue_xpos ypos config.screen_height/2+100
-        vbox:
-            id "vbox"
-            text "{=input_label}Input Word{/color}"
 
-            xpos gui.dialogue_xpos
-            xsize gui.dialogue_width
-            ypos config.screen_height/2+50
+        if orientation == "vertical":
+            add "spell_box.png" xpos gui.dialogue_xpos ypos config.screen_height/2+100
+            vbox:
+                id "vbox"
+                text "{=input_label}Input Word{/color}"
 
-            input:
-                id "input_style_text"
-                pixel_width 450
-                value VariableInputValue("word_change", default = True, returnable =True)
+                xpos gui.dialogue_xpos
+                xsize gui.dialogue_width
+                ypos config.screen_height/2+50
 
-            use show_custom_input()
+                input:
+                    id "input_style_text"
+                    pixel_width 450
+                    value VariableInputValueAttempt("word_change" , default = True, returnable =True)
 
 
 
-screen show_custom_input():
+        # Showing user input in real time
 
-    window:
-        background None
-        vbox:
-            ypos -200
-            text word_change
+            vbox:
+
+                text word_change
+                xpos gui.dialogue_xpos
+                ypos 330
+
+
+            vbox:
+                if attempts > 0:
+                    text "{=attempt}Attempts Left:{/font} " + str(attempts)
+                    xpos gui.dialogue_xpos
+                    ypos 610
+
+        elif orientation == "horizontal":
+
+            add "spell_box.png" xpos gui.nvl_thought_xpos ypos config.screen_height/2+100
+            vbox:
+                id "vbox"
+                text "{=input_label}Input Word{/color}"
+
+                xpos gui.nvl_thought_xpos
+                xsize gui.nvl_thought_width
+                ypos config.screen_height/2+50
+
+
+
+                input:
+                    id "input_style_text"
+                    pixel_width 450
+                    value VariableInputValueAttempt("word_change" , default = True, returnable =True)
+
+        # Showing user input in real time
+
+            vbox:
+
+                text word_change:
+                    color u'#ffffff'
+                xpos gui.nvl_thought_xpos
+                ypos 330
+
+
+            vbox:
+                if attempts > 0:
+                    text "{=attempt}Attempts Left:{/font} " + str(attempts)
+                    xpos gui.nvl_thought_xpos
+                    ypos 610
+
+
+
+
 
 
 ## Input screen ################################################################
@@ -792,7 +863,7 @@ screen word_length_based ():
 
                 vbox:
                     style_prefix "radio"
-                    xsize 500
+                    # xsize 500
                     label _("Word Length Selection")
 
                     textbutton _("2 Letter Words")action SetField(persistent, "difficulty", -1):
@@ -809,6 +880,23 @@ screen word_length_based ():
                     textbutton _("5 Letter Words") action SetField(persistent, "difficulty", 2):
                         if persistent.custom_change == True:
                             action SetField(persistent, "custom_change", False)
+
+
+                vbox:
+
+                    label _("")
+                    style_prefix "check"
+                    textbutton _("+"):
+                        action SetField(persistent, "plus", True)
+                        if persistent.custom_change == True:
+                            action SetField(persistent, "custom_change", False)
+                # vbox:
+                    # style_prefix "pref"
+                    textbutton _("{size=80}-{/size}"):
+                        action SetField(persistent, "minus", True)
+                        if persistent.custom_change == True:
+                            action SetField(persistent, "custom_change", False)
+
 
                 vbox:
                     style_prefix "radio"
@@ -1655,8 +1743,8 @@ style notify_text:
 ## This screen is used for NVL-mode dialogue and menus.
 ##
 ## https://www.renpy.org/doc/html/screen_special.html#nvl
-
-
+#
+#
 screen nvl(dialogue, items=None):
 
     window:
@@ -1708,6 +1796,9 @@ screen nvl_dialogue(dialogue):
                     id d.what_id
 
 
+                use custom_input("horizontal")
+
+
 ## This controls the maximum number of NVL-mode entries that can be displayed at
 ## once.
 define config.nvl_list_length = gui.nvl_list_length
@@ -1716,7 +1807,7 @@ style nvl_window is default
 style nvl_entry is default
 
 style nvl_label is say_label
-style nvl_dialogue is say_dialogue
+style nvl_dialogue
 
 style nvl_button is button
 style nvl_button_text is button_text
@@ -1725,7 +1816,7 @@ style nvl_window:
     xfill True
     yfill True
 
-    background "gui/nvl.png"
+    background Image("gui/nvl.png", xalign=0.5, yalign=0.5)
     padding gui.nvl_borders.padding
 
 style nvl_entry:
@@ -1757,7 +1848,8 @@ style nvl_thought:
     xsize gui.nvl_thought_width
     min_width gui.nvl_thought_width
     text_align gui.nvl_thought_xalign
-    layout ("subtitle" if gui.nvl_text_xalign else "tex")
+    color  u'#ffffff'
+    layout ("subtitle" if gui.nvl_thought_xalign else "tex")
 
 style nvl_button:
     properties gui.button_properties("nvl_button")
