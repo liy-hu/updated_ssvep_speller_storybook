@@ -95,80 +95,54 @@ style frame:
 ##
 ## https://www.renpy.org/doc/html/screen_special.html#say
 #
-# screen say(who, what):
-#     style_prefix "say"
-#
-#
-#     window:
-#         id "window"
-#
-#         # Using custom input screen
-#         use custom_input()
-#
-#         text what id "what" style "say_dialogue"
-#
-#         if who is not None:
-#
-#             window:
-#
-#                 id "namebox"
-#                 style "namebox"
-#                 text who id "who"
-#
-#     ## If there's a side image, display it above the text. Do not display on the
-#     ## phone variant - there's no room.
-#     if not renpy.variant("small"):
-#         add SideImage() xalign 0.0 yalign 1.0
-#
-#
+screen say(who, what):
+    style_prefix "say"
 
 
-## Make the namebox available for styling through the Character object.
-# init python:
-#     config.character_id_prefixes.append('namebox')
-#
-# style window is default
-#
-#
-# style say_label is default
-# style say_dialogue is default
-# style say_thought is say_dialogue
-#
-# style namebox is default
-# style namebox_label is say_label
-#
-# style high_background is default
+    window:
+        id "window"
 
+        # Using custom input screen
+
+        text what id "what" style "say_dialogue"
+
+        if who is not None:
+
+            window:
+
+                id "namebox"
+                style "namebox"
+                text who id "who"
+
+    ## If there's a side image, display it above the text. Do not display on the
+    ## phone variant - there's no room.
+    if not renpy.variant("small"):
+        add SideImage() xalign 0.0 yalign 1.0
+
+
+
+# Make the namebox available for styling through the Character object.
+init python:
+    config.character_id_prefixes.append('namebox')
+
+style window is default
+
+
+style say_label is default
+style say_dialogue is default
+style say_thought is say_dialogue
+
+style namebox is default
+style namebox_label is say_label
+
+style high_background is default
 
 style window:
     xalign 0.5
     xfill True
     yalign gui.textbox_yalign
     ysize gui.textbox_height
-
-
     background Image("gui/textbox.png", xalign=0.0, yalign=0.5)
-
-style window_CUSTOM is window:
-    xalign 0.5
-    xfill True
-    yalign gui.CUSTOM_textbox_yalign
-    ysize gui.CUSTOM_textbox_height
-
-
-    background Image("gui/CUSTOM_textbox.png", xalign =0.5, yalign =1.0)
-
-style vbox_CUSTOM is vbox:
-    #
-    # text "{=input_label}Input Word{/color}"
-
-    xpos gui.CUSTOM_dialogue_xpos + 100
-    xsize gui.dialogue_width
-    ypos  gui.CUSTOM_dialogue_ypos
-
-    # input id "CUSTOM_input_style_text"
-
-
 
 style namebox:
     xpos gui.name_xpos
@@ -180,11 +154,6 @@ style namebox:
     background Frame("gui/namebox.png", gui.namebox_borders, tile=gui.namebox_tile, xalign=gui.name_xalign)
     padding gui.namebox_borders.padding
 
-
-
-style namebox_CUSTOMNAMEBOX is namebox:
-    background Frame("gui/CUSTOM NAMEBOX.png", gui.namebox_borders, tile=gui.namebox_tile, xalign=gui.name_xalign)
-
 style say_label:
     properties gui.text_properties("name", accent=True)
     xalign gui.name_xalign
@@ -192,45 +161,26 @@ style say_label:
 
 style say_dialogue:
     properties gui.text_properties("dialogue")
-
     xpos gui.dialogue_xpos
     xsize gui.dialogue_width
     ypos gui.dialogue_ypos
-
-style say_dialogue_CUSTOM is say_dialogue:
-
-    properties gui.text_properties("CUSTOM_dialogue")
-
-    xpos gui.CUSTOM_dialogue_xpos
-    ypos gui.CUSTOM_dialogue_ypos
-    xsize gui.CUSTOM_dialogue_width
-
-style CUSTOM_textbox is textbox:
-    properties gui.text_properties("CUSTOM_textbox")
-
 
 style input_style_text:
     xalign gui.dialogue_text_xalign
     xmaximum gui.dialogue_width +100
     size 60
-    color "#000"
-
-
-style CUSTOM_input_style_text:
-    xalign gui.CUSTOM_dialogue_text_xalign
-
 
 
 style input_label:
     color "#787878"
 
-# input_required
-
 ## Custom say screen ###########################################################
+##
+## This screen calls the custom_input() screen to prompt the user to enter an
+## input all the while displaying the story text
 
 screen custom_say_screen(what, input_required):
     style_prefix "say"
-
 
     window:
         id "window"
@@ -239,16 +189,7 @@ screen custom_say_screen(what, input_required):
             # Using custom input screen
             use custom_input("vertical")
 
-        # text str(attempt)
-
         text what id "what" style "say_dialogue"
-
-
-
-    # imagemap:
-    #     idle "gui/Quick Menu.png"
-    #     hover "gui/Quick Menu hover.png"
-    #     hotspot (85, 156, 118, 44) action  ShowMenu("quick_menu")
 
 
 ## Custom Input screen #########################################################
@@ -257,11 +198,11 @@ screen custom_say_screen(what, input_required):
 ## global variable word_change. It then uses  another screen show_custon_input
 ## to show what the input is sending in real time
 
-screen custom_input(orientation):
+screen custom_input( orientation):
 
     window:
         background None
-
+        # Input box and style for vertically orientated books
         if orientation == "vertical":
             add "spell_box.png" xpos gui.dialogue_xpos ypos config.screen_height/2+100
             vbox:
@@ -274,26 +215,25 @@ screen custom_input(orientation):
 
                 input:
                     id "input_style_text"
+                    color "#000"
                     pixel_width 450
                     value VariableInputValueAttempt("word_change" , default = True, returnable =True)
 
-
-
         # Showing user input in real time
-
             vbox:
-
                 text word_change
                 xpos gui.dialogue_xpos
                 ypos 330
 
-
+        # Showing user the attempts left
             vbox:
-                if attempts > 0:
-                    text "{=attempt}Attempts Left:{/font} " + str(attempts)
-                    xpos gui.dialogue_xpos
-                    ypos 610
 
+                text "{=attempt}Attempts Left:{/font} " + str(attempts)
+                xpos gui.dialogue_xpos
+                ypos 610
+
+
+        # Input box and style for horizontally orientated books
         elif orientation == "horizontal":
 
             add "spell_box.png" xpos gui.nvl_thought_xpos ypos config.screen_height/2+100
@@ -305,34 +245,27 @@ screen custom_input(orientation):
                 xsize gui.nvl_thought_width
                 ypos config.screen_height/2+50
 
-
-
                 input:
                     id "input_style_text"
+                    color "#000"
                     pixel_width 450
                     value VariableInputValueAttempt("word_change" , default = True, returnable =True)
 
         # Showing user input in real time
-
             vbox:
-
                 text word_change:
                     color u'#ffffff'
                 xpos gui.nvl_thought_xpos
                 ypos 330
 
-
+        # Showing user the attempts left
             vbox:
-                if attempts > 0:
-                    text "{=attempt}Attempts Left:{/font} " + str(attempts)
-                    xpos gui.nvl_thought_xpos
-                    ypos 610
+                text "{=attempt}Attempts Left:{/font} " + '{color=#FFF}'+str(attempts)+'{/color}'
+                xpos gui.nvl_thought_xpos
+                ypos 610
 
 
-
-
-
-
+## IGNORE SCREEN IS NOT USED/REPLACED BY custom_input() screen #################
 ## Input screen ################################################################
 ##
 ## This screen is used to display renpy.input. The prompt parameter is used to
@@ -343,33 +276,30 @@ screen custom_input(orientation):
 ##
 ## https://www.renpy.org/doc/html/screen_special.html#input
 #
-screen input(prompt, someText = ""):
-
-    window style "input_window":
-
-        background Image("inputbox.png", xpos = gui.dialogue_xpos, ypos = config.screen_height/2+100)
-        has vbox
-        xpos gui.dialogue_xpos
-        xsize gui.dialogue_width
-        ypos config.screen_height/2+50
-        text prompt style "input_prompt"
-
-        input id "input" style "input_text" default someText
-
-
-
-
-style input_prompt is default
-
-style input_prompt:
-    xalign gui.dialogue_text_xalign
-    properties gui.text_properties("input_prompt")
-
-style input:
-    xalign gui.dialogue_text_xalign
-    xmaximum gui.dialogue_width +100
-    size 60
-    color "#000"
+# screen input(prompt, someText = ""):
+#
+#     window style "input_window":
+#
+#         background Image("inputbox.png", xpos = gui.dialogue_xpos, ypos = config.screen_height/2+100)
+#         has vbox
+#         xpos gui.dialogue_xpos
+#         xsize gui.dialogue_width
+#         ypos config.screen_height/2+50
+#         text prompt style "input_prompt"
+#
+#         input id "input" style "input_text" default someText
+#
+# style input_prompt is default
+#
+# style input_prompt:
+#     xalign gui.dialogue_text_xalign
+#     properties gui.text_properties("input_prompt")
+#
+# style input:
+#     xalign gui.dialogue_text_xalign
+#     xmaximum gui.dialogue_width +100
+#     size 60
+#     color "#000"
 
 
 ## Choice screen ###############################################################
@@ -391,7 +321,6 @@ screen choice(items):
 ## When this is true, menu captions will be spoken by the narrator. When false,
 ## menu captions will be displayed as empty buttons.
 define config.narrator_menu = True
-
 
 style choice_vbox is vbox
 style choice_button is button
@@ -431,12 +360,12 @@ screen quick_menu():
 
             textbutton _("Main Menu") action MainMenu()
             textbutton _("Back") action Rollback()
-            # textbutton _("History") action ShowMenu('history')
+            textbutton _("History") action ShowMenu('history')
             textbutton _("Skip") action Skip() alternate Skip(fast=True, confirm=True)
             textbutton _("Auto") action Preference("auto-forward", "toggle")
             textbutton _("Save") action ShowMenu('save')
-            # textbutton _("Q.Save") action QuickSave()
-            # textbutton _("Q.Load") action QuickLoad()
+            textbutton _("Q.Save") action QuickSave()
+            textbutton _("Q.Load") action QuickLoad()
             textbutton _("Prefs") action ShowMenu('preferences')
 
 
@@ -532,94 +461,56 @@ style navigation_button_text:
 
 screen main_menu():
 
-    #############################################################################
 
-    # tag menu # This ensures that any other menu screen is replaced.
-    # add "FILE NAME HERE" # Adds background image for the main menu
-    #
-    # #Imagebutton code
-    # imagebutton auto "FILE NAME HERE" xpos ### ypos ### focus_mask True action Start()
-    # imagebutton auto "FILE NAME HERE" xpos ### ypos ### focus_mask True  action ShowMenu('load')
-    # imagebutton auto "FILE NAME HERE" xpos ### ypos ### focus_mask True action ShowMenu('preferences')
-    # imagebutton auto "FILE NAME HERE" xpos ### ypos ### focus_mask True action Quit(confirm=False)
-    #############################################################################
     ## This ensures that any other menu screen is replaced.
     tag menu
 
+    ## This sets the background for the main menu
     add gui.main_menu_background
-    # add gui.The_Paper_Bag_Princess
 
-    #Imagebutton code
-    # imagebutton idle "gui/button/START.png" xpos 100 ypos 410 focus_mask True action Start()
-    # imagebutton idle "gui/button/LOAD.png" xpos 313 ypos 410 focus_mask True action ShowMenu('load')
-    # imagebutton idle "gui/button/PREFERENCES.png" xpos 526 ypos 410 focus_mask True action ShowMenu('preferences')
-    # imagebutton idle "gui/button/HELP.png" xpos 739 ypos 410 focus_mask True action ShowMenu('help')
-    # # imagebutton idle "gui/button/QUIT.png" xpos 952 ypos 410 focus_mask True action ShowMenu('help')
-    # imagebutton idle "gui/button/QUIT.png" xpos 952 ypos 410 focus_mask True action Quit(confirm = False)
-    #
-    # imagebutton idle "gui/button/START.png" xalign 0.4 ypos 360 focus_mask True action Start()
-    # imagebutton idle "gui/button/LOAD.png" xalign 0.45 ypos 430 focus_mask True action ShowMenu('load')
-    # imagebutton idle "gui/button/PREFERENCES.png" xalign 0.5 ypos 500 focus_mask True action ShowMenu('preferences')
-    # imagebutton idle "gui/button/HELP.png" xalign 0.55 ypos 570 focus_mask True action ShowMenu('help')
-    # # imagebutton idle "gui/button/QUIT.png" xpos 952 ypos 410 focus_mask True action ShowMenu('help')
-    # imagebutton idle "gui/button/QUIT.png" xalign 0.6 ypos 640 focus_mask True action Quit(confirm = False)
+    ## These are the buttons shown in the main menu
+    imagebutton:
+        idle "gui/button/START.png"
+        hover "gui/button/START_hover.png"
+        xalign 0.2
+        ypos 385
+        focus_mask True
+        action Start()
+
+    imagebutton:
+        idle "gui/button/LOAD.png"
+        hover "gui/button/LOAD_hover.png"
+        xalign 0.35
+        ypos 385
+        focus_mask True
+        action ShowMenu('load')
+
+    imagebutton:
+        idle "gui/button/PREFERENCES.png"
+        hover "gui/button/PREFERENCES_hover.png"
+        xalign 0.5
+        ypos 385
+        focus_mask True
+        action ShowMenu('preferences')
+
+    imagebutton:
+        idle "gui/button/HELP.png"
+        hover "gui/button/HELP_hover.png"
+        xalign 0.65
+        ypos 385
+        focus_mask True
+        action ShowMenu('help')
 
 
-    imagebutton idle "gui/button/START.png" xalign 0.2 ypos 385 focus_mask True action Start()
-    imagebutton idle "gui/button/LOAD.png" xalign 0.35 ypos 385 focus_mask True action ShowMenu('load')
-    imagebutton idle "gui/button/PREFERENCES.png" xalign 0.5 ypos 385 focus_mask True action ShowMenu('preferences')
-    imagebutton idle "gui/button/HELP.png" xalign 0.65 ypos 385 focus_mask True action ShowMenu('help')
-    imagebutton idle "gui/button/QUIT.png" xalign 0.8 ypos 385 focus_mask True action Quit(confirm = False)
+    imagebutton:
+        idle "gui/button/QUIT.png"
+        hover "gui/button/QUIT_hover.png"
+        xalign 0.8
+        ypos 385
+        focus_mask True
+        action Quit(confirm = False)
 
 
-
-#     # This empty frame darkens the main menu.
-#     frame:
-#         style "main_menu_frame"
-#
-#     ## The use statement includes another screen inside this one. The actual
-#     ## contents of the main menu are in the navigation screen.
-#     use navigation
-#
-#     if gui.show_name:
-#
-#         vbox:
-#             style "main_menu_vbox"
-#
-#             text "[config.name!t]":
-#                 style "main_menu_title"
-#
-#             text "[config.version]":
-#                 style "main_menu_version"
-#
-#
-# style main_menu_frame is empty
-# style main_menu_vbox is vbox
-# style main_menu_text is gui_text
-# style main_menu_title is main_menu_text
-# style main_menu_version is main_menu_text
-#
-# style main_menu_frame:
-#     xsize 280
-#     yfill True
-#
-#     background "gui/overlay/main_menu.png"
-#
-# style main_menu_vbox:
-#     xalign 1.0
-#     xoffset -20
-#     xmaximum 800
-#     yalign 1.0
-#     yoffset -20
-#
-# style main_menu_text:
-#     properties gui.text_properties("main_menu", accent=True)
-#
-# style main_menu_title:
-#     properties gui.text_properties("title")
-#
-# style main_menu_version:
-#     properties gui.text_properties("version")
 
 
 ## Game Menu screen ############################################################
@@ -792,6 +683,11 @@ style about_label_text:
 ##
 ## These screens are responsible for enabling the player to select specific settings or enter custom settings for different preferences.
 ## This includes specific settings for the word origin preferences and story selection preference.
+
+## Word_file_based #############################################################
+##
+## This screen presents the user with default word file settings that they are able to select. It also provides the option for users
+## to load and then enter of the name of their own word file.
 screen word_file_based ():
     default word_file_screenvar = False
 
@@ -807,7 +703,7 @@ screen word_file_based ():
                     style_prefix "radio"
                     xsize 500
                     label _("Word File Selection")
-
+                    # textbuttons for the default word files
                     textbutton _("Dolch Pre-K") action SetField(persistent, "difficulty", -1):
                         if persistent.custom_change == True:
                             action SetField(persistent, "custom_change", False)
@@ -824,7 +720,7 @@ screen word_file_based ():
                         if persistent.custom_change == True:
                             action SetField(persistent, "custom_change", False)
 
-
+                # input box where user may enter the name of the custom loaded word file
                 vbox:
                     style_prefix "radio"
                     label _("Custom Word File Input")
@@ -838,6 +734,7 @@ screen word_file_based ():
                         if word_file_screenvar == True:
                             input:
                                  default my_word_file changed word_file_func
+                                 color '#000'
 
                     imagemap:
                         ypos 15
@@ -847,8 +744,10 @@ screen word_file_based ():
                         if word_file_screenvar == True:
                             hotspot (0, 0, 100, 100) action [SetField(persistent, "custom_change", True), ShowMenu('word_file_based'), SetField(persistent, "difficulty", None)]
 
-
-
+## Word_length_based ###########################################################
+##
+## This screen presents the user with default word length settings that they are able to select. It also provides the option for users
+## to enter their own custom word lengths.
 screen word_length_based ():
     default length_screenvar = False
     default confirm_screenvar = False
@@ -863,9 +762,9 @@ screen word_length_based ():
 
                 vbox:
                     style_prefix "radio"
-                    # xsize 500
-                    label _("Word Length Selection")
 
+                    label _("Word Length Selection")
+                    # textbuttons for the default word lengths
                     textbutton _("2 Letter Words")action SetField(persistent, "difficulty", -1):
                         if persistent.custom_change == True:
                             action SetField(persistent, "custom_change", False)
@@ -882,22 +781,21 @@ screen word_length_based ():
                             action SetField(persistent, "custom_change", False)
 
 
+                # textbuttons for plus and minus to include word lengths greater or less than the specified word lengths
                 vbox:
-
+                    style_prefix "radio"
                     label _("")
-                    style_prefix "check"
                     textbutton _("+"):
-                        action SetField(persistent, "plus", True)
-                        if persistent.custom_change == True:
-                            action SetField(persistent, "custom_change", False)
-                # vbox:
-                    # style_prefix "pref"
-                    textbutton _("{size=80}-{/size}"):
-                        action SetField(persistent, "minus", True)
+                        action ToggleVariable("plus")
                         if persistent.custom_change == True:
                             action SetField(persistent, "custom_change", False)
 
+                    textbutton _("–"):
+                        action ToggleVariable( "minus")
+                        if persistent.custom_change == True:
+                            action SetField(persistent, "custom_change", False)
 
+                # input box where user may enter a custom word length
                 vbox:
                     style_prefix "radio"
                     label _("Custom Word Length Input")
@@ -911,6 +809,7 @@ screen word_length_based ():
                         if length_screenvar == True:
                             input:
                                 default my_word_length changed word_length_func
+                                color '#000'
 
                     imagemap:
                         ypos 15
@@ -920,7 +819,10 @@ screen word_length_based ():
                         if length_screenvar == True:
                             hotspot (0, 0, 100, 100) action [SetField(persistent, "custom_change", True),ShowMenu('word_length_based'),  SetField(persistent, "difficulty", None)]
 
-
+## Story_choices ###############################################################
+##
+## This screen presents the user with default stories. It also provides the option for users
+## to load and then enter of the name of their own stories.
 screen story_choices():
     default story_name_screenvar = False
 
@@ -934,30 +836,25 @@ screen story_choices():
                 vbox:
                     style_prefix "radio"
                     label _("Available Stories")
+                    # textbuttons and images for default story choices
                     textbutton _("Paper Bag Princess") action SetField(persistent, "story_choice","Paper_Bag_Princess" )
-
-
                     image "Paper_Bag_Princess_Title_pg.png":
-
                         xsize 300
                         ysize 300
 
                     textbutton _("I Want My Hat Back") action SetField(persistent, "story_choice","I_Want_My_Hat_Back")
-
                     image "I_Want_My_Hat_Back_Title_pg.png":
-
                         xsize 300
                         ysize 300
 
 
                     textbutton _("I Have To Go") action SetField (persistent, "story_choice", "I_Have_To_Go")
-
                     image "I_Have_To_Go_Title_pg.png":
 
                         xsize 300
                         ysize 300
 
-
+                # input box where user may enter their own custom stories that have been loaded
                 vbox:
                     style_prefix "radio"
                     xpos 100
@@ -973,6 +870,7 @@ screen story_choices():
                         if story_name_screenvar == True:
                             input:
                                 default my_story_name  changed story_name_func
+                                color '#000'
 
                     imagemap:
                         ypos 15
@@ -980,7 +878,8 @@ screen story_choices():
                         hover "enter_button_hover.png"
                         selected_idle "enter_button.png"
                         if story_name_screenvar == True:
-                            hotspot (0, 0, 100, 100) action [SetField(persistent, "custom_change", True),ShowMenu('story_choices'),  SetField(persistent, "story_choice", None)]
+                            hotspot (0, 0, 100, 100) action [SetField(persistent, "custom_story", True),ShowMenu('story_choices'),  SetField(persistent, "story_choice", None)]
+
 
                     textbutton _("The Giving Tree") action SetField (persistent, "story_choice", "The_Giving_Tree"):
                         ypos 105
@@ -988,7 +887,6 @@ screen story_choices():
 
                     image "The_Giving_Tree_Title_pg.png":
                         ypos 105
-
                         xsize 300
                         ysize 300
 
@@ -996,7 +894,6 @@ screen story_choices():
 ## Invalid Input screens ##############################################
 ##
 ## This screen is responsible for informing user that they inputted an invalid custom setting
-
 screen invalid_input_error (preference_type):
 
     vbox:
@@ -1178,7 +1075,8 @@ screen preferences():
 
                 ## Additional vboxes of type "radio_pref" or "check_pref" can be
                 ## added here, to add additional creator-defined preferences.
-                ## ADDITION OF DIFFICULTY LEVEL
+
+                ## Addition of word origin selection
                 vbox:
                     style_prefix "radio"
                     label _("Words_Origin")
@@ -1187,14 +1085,14 @@ screen preferences():
                     textbutton _("Word File Based") action [SetField(persistent, "type", "word_file"),ShowMenu ("word_file_based")]
 
 
-                ## ADDITION OF STORY SELECTION
+                ## Addition of story selection
                 vbox:
                     style_prefix "radio"
                     label _("Story")
                     textbutton _("Browse and Select Stories") action ShowMenu("story_choices")
 
 
-                ## ADDITION OF BACKGROUND MUSIC SELECTION
+                ## Addition of background music selection
                 vbox:
                     style_prefix "radio"
                     label _("Background Music Selection")
@@ -1322,6 +1220,8 @@ style slider_button_text:
 
 style slider_vbox:
     xsize 450
+
+
 
 
 ## History screen ##############################################################
@@ -1795,7 +1695,7 @@ screen nvl_dialogue(dialogue):
                 text d.what:
                     id d.what_id
 
-
+                # calls on the custom_input () screen to prompt users to enter an input
                 use custom_input("horizontal")
 
 

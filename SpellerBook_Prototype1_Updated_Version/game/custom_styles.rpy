@@ -1,11 +1,16 @@
-# Setting custom word styles for gui display
 
-# Styles for text displayed within the game on game screen
-style correct_word:
+# Custom styles for text displayed within the game on game screen
+style correct_word_dark:
     size 80
     font "AlaskaRegular.ttf"
     underline True
 
+style correct_word_light:
+    color "#FFFFFF"
+    size 80
+    font "AlaskaRegular.ttf"
+    underline True
+    
 style correct:
     color "#52BE80"
     italic True
@@ -24,6 +29,7 @@ style highlight:
     underline True
 
 style saved_input:
+    color '#000000'
     italic True
     underline True
 

@@ -1,8 +1,7 @@
 init python:
-    # Creates a list of page objects
-    # Parameters: list of strings, where the strings are the entire text of one page of the book
-    # Returns: list of page objects
-
+    # Function:         Creates a list of page objects
+    # Parameters:       story_text (list of strings, where the strings are the entire text of one page of the book)
+    # Returns:          page_list (list of page objects)
     def listing_pages (story_text):
         number_of_pages = len(story_text)
         page_list = []

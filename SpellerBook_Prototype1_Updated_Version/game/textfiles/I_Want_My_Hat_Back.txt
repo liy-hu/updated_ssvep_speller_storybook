@@ -1,6 +1,6 @@
-pg:1 I want my hat back. 
+pg:1 I want my hat back.
 pg:2 Have you seen my hat? No. I haven't seen your hat. OK. Thank you.
-pg:3 Have you seen my hat? No. I have not seen any hats around here. Ok. Thank you anyway.
+pg:3 Have you seen my hat? No. I have not seen any hats around here. Thank you anyway.
 pg:4 Have you seen my hat? No. Why are you asking me. I haven't seen it. I haven't seen any hats anywhere. I would not steal a hat. Don't ask me
 any more questions. OK. Thank you anyway.
 pg:5 Have you seen my hat? I haven't seen anything all day. I have been trying to climb this rock. Would you like me to lift you on top of it? Yes, please.
